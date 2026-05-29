@@ -1,0 +1,59 @@
+package com.customerChurn.controller;
+
+import com.customerChurn.entity.Customer;
+import com.customerChurn.repository.CustomerRepositories;
+import com.customerChurn.service.Customerservice;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.util.CustomObjectInputStream;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+@Slf4j
+@Controller("/user")
+public class CustomerController {
+
+    @Autowired
+    Customerservice customerservice;
+
+    @PostMapping("/newUser")
+    public ResponseEntity<?> saveUser(@RequestBody Customer customer){
+        try{
+            customerservice.saveUser(customer);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        catch (Exception e){
+            log.error("customer not saved");
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @DeleteMapping("/Delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+        try{
+            customerservice.deleteUser(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        catch (Exception e){
+            log.error("User cannot be deleted");
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    @PutMapping("/UpdateUser/{id}")
+    public ResponseEntity<?> updateuser(@PathVariable Long id, @RequestBody Customer customer){
+        try{
+            Customer customerold = customerservice.getCustomerById(id);
+            customerservice.updateCustomer(customer, id);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        }
+        catch(Exception e){
+            log.error("Customer not updated");
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+
+}
