@@ -2,11 +2,11 @@ package com.customerChurn.service;
 
 import com.customerChurn.entity.Customer;
 import com.customerChurn.repository.CustomerRepositories;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j
+import java.util.List;
+
 @Service
 public class Customerservice {
 
@@ -37,6 +37,10 @@ public class Customerservice {
         if(customer.getSupportCalls()!= null) existing.setSupportCalls(customer.getSupportCalls());
         if(customer.getChurn()!= null) existing.setChurn(customer.getChurn());
         customerRepositories.save(existing);
+    }
+
+    public List<Customer> getalluser(){
+        return customerRepositories.findAll();
     }
 
 }

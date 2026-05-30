@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Controller("/user")
 public class CustomerController {
@@ -55,5 +58,16 @@ public class CustomerController {
         }
     }
 
-
+    @GetMapping("/get_all")
+    public ResponseEntity<?> getalluser(){
+        try{
+            List<Customer> list = new ArrayList<>();
+            list = customerservice.getalluser();
+            return new ResponseEntity<>(list, HttpStatus.OK);
+        }
+        catch (Exception e){
+            log.error("cant fetch all user");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 }
