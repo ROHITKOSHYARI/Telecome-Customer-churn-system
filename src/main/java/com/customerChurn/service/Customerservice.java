@@ -43,4 +43,8 @@ public class Customerservice {
         return customerRepositories.findAll();
     }
 
+    public Customer getUser(Long id){
+        return customerRepositories.getReferenceById(id);
+    }
+
 }

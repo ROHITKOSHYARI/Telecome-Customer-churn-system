@@ -32,7 +32,6 @@ public class CustomerController {
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
-
     @DeleteMapping("/Delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
         try{
@@ -68,6 +67,18 @@ public class CustomerController {
         catch (Exception e){
             log.error("cant fetch all user");
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/customer/{id}")
+    public ResponseEntity<?> getuser(@PathVariable Long id){
+        try{
+            Customer customer = customerservice.getUser(id);
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        }
+        catch (Exception e){
+            log.error("Cannot fetch Customer");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
