@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +77,17 @@ public class CustomerController {
         }
         catch (Exception e){
             log.error("Cannot fetch Customer");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @PostMapping
+    public ResponseEntity<?> customerChurn(Long id){
+        try{
+            Boolean churn = customerservice.getChurn(id);
+            return new ResponseEntity<>(churn, HttpStatus.OK);
+        }
+        catch (Exception e){
+            log.error("Cannot find customer churn fot the current user");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

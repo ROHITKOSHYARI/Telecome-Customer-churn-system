@@ -47,4 +47,8 @@ public class Customerservice {
         return customerRepositories.getReferenceById(id);
     }
 
+    public boolean getChurn(Long id){
+        Customer customer = customerRepositories.getReferenceById(id);
+        return customer.getChurn();
+    }
 }
