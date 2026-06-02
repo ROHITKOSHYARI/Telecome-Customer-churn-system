@@ -1,5 +1,4 @@
 package com.customerChurn.controller;
-
 import com.customerChurn.entity.Customer;
 import com.customerChurn.repository.CustomerRepositories;
 import com.customerChurn.service.Customerservice;
@@ -83,7 +82,7 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<?> customerChurn(Long id){
         try{
-            Boolean churn = customerservice.getChurn(id);
+            String churn = customerservice.getChurn(id);
             return new ResponseEntity<>(churn, HttpStatus.OK);
         }
         catch (Exception e){
