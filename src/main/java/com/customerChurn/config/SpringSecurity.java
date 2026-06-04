@@ -20,20 +20,17 @@ public class SpringSecurity {
     @Autowired
     UserServiceIMPL userServiceIMPL;
 
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, Customerservice customerservice) throws Exception {
         return httpSecurity.authorizeHttpRequests(request ->request
-                        .requestMatchers("/User/**").authenticated()
+                        .requestMatchers("/User/**","/customer/**").authenticated()
                         .requestMatchers("/Public/**").permitAll()
                     )
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .build();
-
     }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
 }

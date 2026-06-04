@@ -17,10 +17,10 @@ public class UserServiceIMPL {
     UserRepositories userRepositories;
 
     public UserDetails loadUserByUsername(String username){
-        User user = userRepositories.findByUserName(username);
+        User user = userRepositories.findByUsername(username);
         if(user!= null){
             return org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getUserName())
+                    .username(user.getUsername())
                     .password(user.getPassword())
                     .roles(user.getRoles().toArray(new String[0]))
                     .build();

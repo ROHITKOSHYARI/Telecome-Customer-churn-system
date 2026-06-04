@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Controller("/user")
+@Controller("/customer")
 public class CustomerController {
 
     @Autowired
