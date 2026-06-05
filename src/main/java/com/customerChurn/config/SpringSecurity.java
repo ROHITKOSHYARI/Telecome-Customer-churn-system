@@ -3,6 +3,7 @@ package com.customerChurn.config;
 
 import com.customerChurn.service.Customerservice;
 import com.customerChurn.service.UserServiceIMPL;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,14 +17,16 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SpringSecurity {
-    @Autowired
-    UserServiceIMPL userServiceIMPL;
 
+    private final UserServiceIMPL userServiceIMPL;
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, Customerservice customerservice) throws Exception {
         return httpSecurity.authorizeHttpRequests(request ->request
-                        .requestMatchers("/User/**","/customer/**").authenticated()
-                        .requestMatchers("/Public/**").permitAll()
+                        .requestMatchers("/user/**","/customer/**").authenticated()
+                        .requestMatchers("/public/**").permitAll()
                     )
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Controller("/customer")
+@Controller
+@RequestMapping("/customer")
 public class CustomerController {
 
     @Autowired

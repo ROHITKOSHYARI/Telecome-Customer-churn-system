@@ -1,9 +1,6 @@
 package com.customerChurn.entity;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
@@ -18,7 +15,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
 
 }
