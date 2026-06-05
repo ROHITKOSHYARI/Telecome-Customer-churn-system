@@ -35,7 +35,7 @@ public class Public {
         }
     }
 
-    @PostMapping("/saveUser")
+    @PostMapping("/saveuser")
     public ResponseEntity<?> saveUser(@RequestBody User user){
         try {
             userservice.createUser(user);
