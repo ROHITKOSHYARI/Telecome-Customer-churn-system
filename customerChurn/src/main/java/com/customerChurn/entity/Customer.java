@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Table(name = "customers")
 public class Customer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String customerId;
     private String gender;
     private Integer seniorCitizen;
@@ -28,5 +29,7 @@ public class Customer {
     private String paymentMethod;
     private BigDecimal monthlyCharges;
     private BigDecimal totalCharges;
+    @Enumerated(EnumType.STRING)
     private Churn churn;
+    private Double churnProbability;
 }
