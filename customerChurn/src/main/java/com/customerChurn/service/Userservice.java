@@ -30,4 +30,7 @@ public class Userservice {
     public void deleteuser(String username){
         userRepositories.deleteUserByUsername(username);
     }
+
+
+
 }

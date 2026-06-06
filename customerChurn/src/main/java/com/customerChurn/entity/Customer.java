@@ -1,4 +1,5 @@
 package com.customerChurn.entity;
+import com.customerChurn.Enum.Churn;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -27,5 +28,5 @@ public class Customer {
     private String paymentMethod;
     private BigDecimal monthlyCharges;
     private BigDecimal totalCharges;
-    private String churn;
+    private Churn churn;
 }

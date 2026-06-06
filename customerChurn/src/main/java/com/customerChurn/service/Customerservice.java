@@ -1,5 +1,6 @@
 package com.customerChurn.service;
 
+import com.customerChurn.Enum.Churn;
 import com.customerChurn.entity.Customer;
 import com.customerChurn.repository.CustomerRepositories;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class Customerservice {
         return customerRepositories.getReferenceById(id);
     }
 
-    public String getChurn(Long id){
+    public Churn getChurn(Long id){
         Customer customer = customerRepositories.getReferenceById(id);
         return customer.getChurn();
     }
