@@ -1,15 +1,18 @@
 package com.customerChurn.entity;
+
 import com.customerChurn.Enum.Churn;
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.math.BigDecimal;
+
 @Data
 @Entity
 @Table(name = "customers")
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String customerId;
+    private Long customerId;
     private String gender;
     private Integer seniorCitizen;
     private String partner;
@@ -31,5 +34,6 @@ public class Customer {
     private BigDecimal totalCharges;
     @Enumerated(EnumType.STRING)
     private Churn churn;
-    private Double churnProbability;
+    private BigDecimal churnProbability;
+
 }
