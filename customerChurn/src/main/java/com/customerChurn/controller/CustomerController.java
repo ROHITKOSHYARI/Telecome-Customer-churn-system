@@ -1,8 +1,8 @@
 package com.customerChurn.controller;
+import com.customerChurn.dto.PredectionResponse;
 import com.customerChurn.entity.Customer;
 
 import com.customerChurn.service.PredictionService;
-import dto.PredectionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

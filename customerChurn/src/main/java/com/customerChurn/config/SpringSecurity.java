@@ -26,6 +26,7 @@ public class SpringSecurity {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, Customerservice customerservice) throws Exception {
         return httpSecurity.authorizeHttpRequests(request ->request
                         .requestMatchers("/user/**","/customer/**").authenticated()
+                        .requestMatchers("/swagger-ui/**","/swagger-ui.html","/v3/api-docs/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
                     )
                 .httpBasic(Customizer.withDefaults())

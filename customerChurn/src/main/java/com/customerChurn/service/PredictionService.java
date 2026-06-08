@@ -1,10 +1,10 @@
 package com.customerChurn.service;
 
+import com.customerChurn.dto.PredectionResponse;
+import com.customerChurn.dto.PredictionRequest;
 import com.customerChurn.entity.Customer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dto.PredectionResponse;
-import dto.PredictionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

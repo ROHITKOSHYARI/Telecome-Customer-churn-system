@@ -1,4 +1,4 @@
-package dto;
+package com.customerChurn.dto;
 
 import lombok.Data;
 
