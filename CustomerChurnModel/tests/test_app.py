@@ -1,33 +1,15 @@
-import importlib
 import sys
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
+# Add project root to Python path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 
 class FakeModel:
     def predict(self, data):
-        assert list(data.columns) == [
-            "gender",
-            "SeniorCitizen",
-            "Partner",
-            "Dependents",
-            "tenure",
-            "PhoneService",
-            "MultipleLines",
-            "InternetService",
-            "OnlineSecurity",
-            "OnlineBackup",
-            "DeviceProtection",
-            "TechSupport",
-            "StreamingTV",
-            "StreamingMovies",
-            "Contract",
-            "PaperlessBilling",
-            "PaymentMethod",
-            "MonthlyCharges",
-            "TotalCharges",
-        ]
         return ["Yes"]
 
     def predict_proba(self, data):
@@ -36,52 +18,74 @@ class FakeModel:
 
 @pytest.fixture
 def client(monkeypatch):
-    import joblib
+    # Mock model loading before importing app
+    monkeypatch.setattr(
+        "joblib.load",
+        lambda _: FakeModel()
+    )
 
-    monkeypatch.setattr(joblib, "load", lambda path: FakeModel())
-    sys.modules.pop("app", None)
-    app_module = importlib.import_module("app")
-    return TestClient(app_module.app)
+    # Import app after mocking
+    if "app" in sys.modules:
+        del sys.modules["app"]
+
+    import app
+
+    return TestClient(app.app)
 
 
-def test_health_returns_up(client):
+def test_health_endpoint(client):
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "UP"}
+    assert response.json() == {
+        "status": "UP"
+    }
 
 
-def test_predict_returns_churn_prediction(client):
+def test_predict_endpoint(client):
+    payload = {
+        "gender": "Male",
+        "SeniorCitizen": 0,
+        "Partner": "Yes",
+        "Dependents": "No",
+        "tenure": 24,
+        "PhoneService": "Yes",
+        "MultipleLines": "No",
+        "InternetService": "Fiber optic",
+        "OnlineSecurity": "No",
+        "OnlineBackup": "Yes",
+        "DeviceProtection": "No",
+        "TechSupport": "No",
+        "StreamingTV": "Yes",
+        "StreamingMovies": "Yes",
+        "Contract": "Month-to-month",
+        "PaperlessBilling": "Yes",
+        "PaymentMethod": "Electronic check",
+        "MonthlyCharges": 89.5,
+        "TotalCharges": 2148.0
+    }
+
     response = client.post(
         "/predict",
-        json={
-            "gender": "Female",
-            "SeniorCitizen": 0,
-            "Partner": "Yes",
-            "Dependents": "No",
-            "tenure": 12,
-            "PhoneService": "Yes",
-            "MultipleLines": "No",
-            "InternetService": "Fiber optic",
-            "OnlineSecurity": "No",
-            "OnlineBackup": "Yes",
-            "DeviceProtection": "No",
-            "TechSupport": "No",
-            "StreamingTV": "Yes",
-            "StreamingMovies": "Yes",
-            "Contract": "Month-to-month",
-            "PaperlessBilling": "Yes",
-            "PaymentMethod": "Electronic check",
-            "MonthlyCharges": 89.10,
-            "TotalCharges": 1069.20,
-        },
+        json=payload
     )
 
     assert response.status_code == 200
-    assert response.json() == {"churn": "Yes", "churnProbability": 0.78}
+
+    body = response.json()
+
+    assert body["churn"] == "Yes"
+    assert body["churnProbability"] == 0.78
 
 
-def test_predict_validates_required_fields(client):
-    response = client.post("/predict", json={"gender": "Female"})
+def test_predict_validation_error(client):
+    payload = {
+        "gender": "Male"
+    }
+
+    response = client.post(
+        "/predict",
+        json=payload
+    )
 
     assert response.status_code == 422

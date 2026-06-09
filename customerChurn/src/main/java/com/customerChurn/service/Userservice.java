@@ -4,8 +4,11 @@ import com.customerChurn.dto.ChangePasswordRequest;
 import com.customerChurn.dto.UserResponse;
 import com.customerChurn.entity.User;
 import com.customerChurn.repository.UserRepositories;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,5 +51,4 @@ public class Userservice {
     public void deleteuser(String username){
         userRepositories.deleteUserByUsername(username);
     }
-
 }

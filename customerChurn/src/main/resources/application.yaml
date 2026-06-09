@@ -1,14 +1,7 @@
 spring:
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-  application:
-    name: customerChurn
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/customer_churn
+    url: ${DB_URL}
     username: postgres
-    password: root
 
   jpa:
     show-sql: true
@@ -19,6 +12,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  application:
+    name: customerChurn
 
 logging:
   level:
