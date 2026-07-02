@@ -1,6 +1,6 @@
 # Customer Churn Prediction Platform
 
-A comprehensive end-to-end customer churn prediction system built with Spring Boot, PostgreSQL, FastAPI, and scikit-learn. This platform predicts whether a telecom customer is likely to churn and provides a churn probability score for customer retention prioritization.
+A comprehensive end-to-end customer churn prediction system built with **Spring Boot**, **PostgreSQL**, **FastAPI**, **scikit-learn**, and a modern **glassmorphism frontend**. This platform predicts whether a telecom customer is likely to churn and provides a churn probability score for customer retention prioritization.
 
 ## 📋 Table of Contents
 
@@ -9,6 +9,8 @@ A comprehensive end-to-end customer churn prediction system built with Spring Bo
 - [Technology Stack](#technology-stack)
 - [Prerequisites](#prerequisites)
 - [Project Structure](#project-structure)
+- [Quick Start (Docker Compose)](#quick-start-docker-compose)
+- [Frontend](#frontend)
 - [Setup Instructions](#setup-instructions)
 - [API Documentation](#api-documentation)
   - [Swagger/OpenAPI](#swagger-openapi)
@@ -25,13 +27,15 @@ A comprehensive end-to-end customer churn prediction system built with Spring Bo
 
 ## Overview
 
-Customer Churn Prediction is a two-service architecture that combines a secured Spring Boot REST API with a dedicated FastAPI machine learning microservice. The system enables:
+Customer Churn Prediction is a **three-tier architecture** that combines a modern glassmorphism frontend, a secured Spring Boot REST API, and a dedicated FastAPI machine learning microservice. The system enables:
 
+- Beautiful Apple-inspired glassmorphism UI with separate pages for login, prediction, and profile management
 - User registration and profile management
-- Secured API endpoints with HTTP Basic authentication
+- Secured API endpoints with JWT authentication
 - Real-time customer churn prediction with probability scoring
 - PostgreSQL persistence for users and customer data
 - Full Swagger/OpenAPI documentation
+- One-command deployment with Docker Compose
 
 ---
 
@@ -40,37 +44,46 @@ Customer Churn Prediction is a two-service architecture that combines a secured 
 ### High-Level Flow
 
 ```
-Client
+Browser (localhost:4173)
   |
-  | HTTP Basic Auth
+  | Glassmorphism SPA
+  v
+Nginx Reverse Proxy :4173
+  |
+  | /api/* → :8080
   v
 Spring Boot API :8080
   |
-  | RestTemplate POST /predict
-  v
-FastAPI ML Service :8000
-  |
-  | joblib model inference
-  v
-scikit-learn Pipeline
-  |
-  v
-PostgreSQL Database
+  | Bearer JWT        | RestTemplate POST /predict
+  v                   v
+PostgreSQL DB     FastAPI ML Service :8000
+                      |
+                      | joblib model inference
+                      v
+                  scikit-learn Pipeline
 ```
 
 ### Components
 
 | Component | Role | Port |
 |-----------|------|------|
+| **Frontend (Nginx)** | Glassmorphism SPA + Reverse Proxy | 4173 |
 | **Spring Boot Backend** | API, Security, Database ORM | 8080 |
 | **FastAPI ML Service** | Model Inference | 8000 |
-| **PostgreSQL** | Data Persistence | 5432 |
+| **PostgreSQL (Neon)** | Cloud Data Persistence | — |
 
 ### Key Responsibilities
 
+**Frontend (`frontend/`):**
+- Apple-inspired glassmorphism single-page application
+- Hash-based client-side routing (`#/login`, `#/predict`, `#/profile`)
+- Nginx reverse proxy forwarding `/api/*` to Spring Boot
+- Responsive design with animated gradient backgrounds
+- JWT token management with localStorage
+
 **Spring Boot Backend (`customerChurn/`):**
 - REST endpoint definitions (registration, profile, prediction routing)
-- Spring Security with HTTP Basic authentication
+- Spring Security with JWT authentication
 - Spring Data JPA with PostgreSQL
 - BCrypt password encoding
 - RestTemplate calls to FastAPI service
@@ -87,12 +100,20 @@ PostgreSQL Database
 
 ## Technology Stack
 
+### Frontend
+- **Language:** Vanilla JavaScript (ES2020+)
+- **Styling:** Vanilla CSS with glassmorphism design system
+- **Typography:** Inter (Google Fonts)
+- **Design:** Apple-inspired frosted-glass aesthetic with `backdrop-filter: blur()`
+- **Web Server:** Nginx 1.27 Alpine (serves static files + reverse proxy)
+- **Containerization:** Docker
+
 ### Backend
 - **Framework:** Spring Boot 3.5.0
 - **Language:** Java 21
 - **Security:** Spring Security 3.5.0
 - **Database ORM:** Spring Data JPA / Hibernate
-- **Database:** PostgreSQL
+- **Database:** PostgreSQL (Neon cloud)
 - **Password Encoding:** BCrypt
 - **API Documentation:** SpringDoc OpenAPI 2.8.0
 - **REST Client:** Spring RestTemplate
@@ -108,16 +129,27 @@ PostgreSQL Database
 - **Model Serialization:** joblib
 - **Data Validation:** Pydantic
 
+### DevOps
+- **Orchestration:** Docker Compose
+- **Containers:** 3 services (frontend, backend, ML)
+- **Reverse Proxy:** Nginx
+
 ---
 
 ## Prerequisites
 
-### System Requirements
+### System Requirements (Docker — Recommended)
+- **Docker Desktop** with Docker Compose
+- **Git** for version control
+
+That's it! Docker handles Java, Python, and Nginx.
+
+### System Requirements (Manual Setup)
 - **Java:** JDK 21 or later
-- **Python:** 3.9 or later
 - **Maven:** 3.6 or later
+- **Python:** 3.9 or later
 - **PostgreSQL:** 12 or later
-- **Git:** For version control
+- **Node.js:** Not required (vanilla JS frontend)
 
 ### Tools
 - VS Code, IntelliJ IDEA, or any Java IDE
@@ -130,21 +162,32 @@ PostgreSQL Database
 
 ```
 customerChurnpredection/
+├── frontend/                               # Glassmorphism SPA + Nginx
+│   ├── index.html                         # Entry point (Google Fonts, meta tags)
+│   ├── styles.css                         # Glassmorphism design system
+│   ├── app.js                             # SPA router, API layer, page templates
+│   ├── nginx.conf                         # Reverse proxy config (/api → :8080)
+│   ├── Dockerfile                         # Nginx Alpine image
+│   └── .dockerignore
+│
 ├── customerChurn/                          # Spring Boot Backend
 │   ├── src/main/java/com/customerChurn/
 │   │   ├── controller/
-│   │   │   ├── Public.java                # Public endpoints (health, registration)
+│   │   │   ├── Public.java                # Public endpoints (health, login, register)
 │   │   │   ├── UserController.java        # User profile management
 │   │   │   └── CustomerController.java    # Customer churn prediction
 │   │   ├── service/
 │   │   │   ├── Userservice.java           # User business logic
 │   │   │   ├── UserServiceIMPL.java       # User service implementation
 │   │   │   ├── PredictionService.java     # ML service integration
+│   │   │   ├── JwtService.java            # JWT token generation & validation
 │   │   │   └── Customerservice.java       # Customer business logic
 │   │   ├── entity/
 │   │   │   ├── User.java                  # User JPA entity
 │   │   │   └── Customer.java              # Customer JPA entity
 │   │   ├── dto/
+│   │   │   ├── LoginRequest.java          # Login request DTO
+│   │   │   ├── LoginResponse.java         # Login response DTO (token + user)
 │   │   │   ├── UserResponse.java          # User response DTO
 │   │   │   ├── PredictionRequest.java     # Prediction request DTO
 │   │   │   ├── PredectionResponse.java    # Prediction response DTO
@@ -154,7 +197,8 @@ customerChurnpredection/
 │   │   │   └── CustomerRepositories.java  # Customer JPA repository
 │   │   ├── config/
 │   │   │   ├── AppConfig.java             # Application configuration
-│   │   │   └── SpringSecurity.java        # Spring Security configuration
+│   │   │   ├── SpringSecurity.java        # Spring Security configuration
+│   │   │   └── JwtAuthenticationFilter.java # JWT filter for secured routes
 │   │   ├── Enum/
 │   │   │   └── Churn.java                 # Churn status enum
 │   │   └── CustomerChurnApplication.java  # Main application class
@@ -181,6 +225,8 @@ customerChurnpredection/
 │   │   └── test_app.py                    # ML service tests
 │   └── Churn/                             # Python virtual environment
 │
+├── docker-compose.yml                      # Full-stack orchestration
+│
 ├── docs/
 │   ├── API.md                             # Detailed API documentation
 │   ├── ARCHITECTURE.md                    # Architecture deep dive
@@ -190,6 +236,75 @@ customerChurnpredection/
 │
 └── README.md                               # This file
 ```
+
+---
+
+## Quick Start (Docker Compose)
+
+The fastest way to run the entire stack:
+
+```bash
+# 1. Build the Spring Boot JAR
+cd customerChurn
+mvn clean package -DskipTests
+cd ..
+
+# 2. Launch all 3 services
+docker compose up --build
+```
+
+Open **http://localhost:4173** in your browser.
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:4173 |
+| Backend API | http://localhost:8080 |
+| ML Service | http://localhost:8000 |
+| Swagger UI | http://localhost:8080/swagger-ui/index.html |
+
+To stop:
+```bash
+docker compose down
+```
+
+---
+
+## Frontend
+
+The frontend is a **vanilla JavaScript single-page application** with an Apple-inspired **glassmorphism** design. No frameworks or build tools required — just HTML, CSS, and JS served by Nginx.
+
+### Design
+
+- **Light theme** with animated gradient background (lavender → peach → sky blue)
+- **Frosted-glass cards** using `backdrop-filter: blur(24px)` with translucent white backgrounds
+- **Inter font** from Google Fonts for clean, modern typography
+- **Micro-animations**: page fade-ins, button hover glows, result card pop-in effects
+- **Responsive layout** that works on desktop, tablet, and mobile
+
+### Pages
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `#/login` | **Login** | Sign in with username/password |
+| `#/register` | **Register** | Create a new account |
+| `#/predict` | **Predictions** | Submit customer data and view churn prediction results |
+| `#/profile` | **Profile** | Update email, change password, delete account |
+
+### Key Files
+
+| File | Purpose |
+|------|--------|
+| `frontend/index.html` | Entry point — loads Google Fonts, CSS, and app.js |
+| `frontend/styles.css` | Complete glassmorphism design system with CSS custom properties |
+| `frontend/app.js` | SPA router, API layer (XMLHttpRequest), page templates, event handling |
+| `frontend/nginx.conf` | Serves static files + proxies `/api/*` to Spring Boot |
+
+### Architecture
+
+- **Routing**: Hash-based client-side routing (`window.hashchange` event)
+- **API calls**: `XMLHttpRequest` with `Content-Type: application/json` (chosen over `fetch` for better compatibility with the nginx reverse proxy)
+- **Auth**: JWT stored in `localStorage`, sent as `Authorization: Bearer` header
+- **No build step**: Files are copied directly into the Nginx Docker image
 
 ---
 
@@ -297,7 +412,8 @@ The Swagger interface allows you to:
 
 | Service | Base URL |
 |---------|----------|
-| Spring Boot API | `http://localhost:8080` |
+| Frontend | `http://localhost:4173` |
+| Spring Boot API | `http://localhost:8080` (or via `/api` on frontend) |
 | FastAPI ML Service | `http://localhost:8000` |
 
 ---
@@ -341,7 +457,6 @@ health check pass
 curl -X POST http://localhost:8080/public/saveuser \
   -H "Content-Type: application/json" \
   -d '{
-    "id": 1,
     "username": "demo",
     "password": "demo123",
     "email": "demo@example.com",
@@ -352,7 +467,6 @@ curl -X POST http://localhost:8080/public/saveuser \
 **Request Body Schema:**
 ```json
 {
-  "id": 0,
   "username": "string",
   "password": "string (will be BCrypt encoded)",
   "email": "string",
@@ -377,15 +491,50 @@ HTTP 201 Created
 
 ---
 
+### Login
+
+**Endpoint:** `POST /public/login`
+
+**Description:** Authenticate a user and return a JWT for protected endpoints.
+
+**Authentication:** Not required
+
+**Request:**
+```bash
+curl -X POST http://localhost:8080/public/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "demo",
+    "password": "demo123"
+  }'
+```
+
+**Response:**
+```json
+{
+  "token": "<jwt-token>",
+  "tokenType": "Bearer",
+  "expiresIn": 86400000,
+  "user": {
+    "id": 1,
+    "username": "demo",
+    "email": "demo@example.com",
+    "roles": ["USER"]
+  }
+}
+```
+
+---
+
 ## User Endpoints
 
-These endpoints **REQUIRE** HTTP Basic Authentication.
+These endpoints **REQUIRE** JWT authentication.
 
-**Authentication Format:** Username and password created via `/public/saveuser`
+**Authentication Format:** Login through `/public/login`, then send the returned token as a Bearer token.
 
 **Example Header:**
 ```
-Authorization: Basic ZGVtbzpkZW1vMTIz  (Base64 encoded: demo:demo123)
+Authorization: Bearer <jwt-token>
 ```
 
 ### Get Authenticated User Profile
@@ -399,7 +548,7 @@ Authorization: Basic ZGVtbzpkZW1vMTIz  (Base64 encoded: demo:demo123)
 **Request:**
 ```bash
 curl -X GET http://localhost:8080/user/getuser \
-  -u demo:demo123
+  -H "Authorization: Bearer <jwt-token>"
 ```
 
 **Response:**
@@ -431,7 +580,7 @@ curl -X GET http://localhost:8080/user/getuser \
 **Request:**
 ```bash
 curl -X PUT http://localhost:8080/user/updateuser \
-  -u demo:demo123 \
+  -H "Authorization: Bearer <jwt-token>" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "newemail@example.com",
@@ -474,7 +623,7 @@ HTTP 204 No Content
 **Request:**
 ```bash
 curl -X PUT http://localhost:8080/user/changepassword \
-  -u demo:demo123 \
+  -H "Authorization: Bearer <jwt-token>" \
   -H "Content-Type: application/json" \
   -d '{
     "currentPassword": "demo123",
@@ -521,7 +670,7 @@ HTTP 201 Created
 **Request:**
 ```bash
 curl -X DELETE http://localhost:8080/user/delete_user \
-  -u demo:demo123
+  -H "Authorization: Bearer <jwt-token>"
 ```
 
 **Response:**
@@ -542,7 +691,7 @@ HTTP 204 No Content
 
 ## Customer Endpoints
 
-These endpoints **REQUIRE** HTTP Basic Authentication.
+These endpoints **REQUIRE** JWT authentication.
 
 ### Get Churn Prediction
 
@@ -555,7 +704,7 @@ These endpoints **REQUIRE** HTTP Basic Authentication.
 **Request:**
 ```bash
 curl -X POST http://localhost:8080/customer/getpredection \
-  -u demo:demo123 \
+  -H "Authorization: Bearer <jwt-token>" \
   -H "Content-Type: application/json" \
   -d '{
     "gender": "Male",
@@ -764,31 +913,36 @@ curl -X POST http://localhost:8000/predict \
 
 ## Authentication
 
-### HTTP Basic Authentication
+### JWT Authentication
 
-All protected endpoints use HTTP Basic Authentication (RFC 7617).
+All protected endpoints use Bearer JWT authentication.
 
 **Credentials:**
 - Created via `/public/saveuser` endpoint
-- Username and password are sent in the `Authorization` header
-- Credentials are Base64 encoded
+- Username and password are sent to `/public/login`
+- The returned JWT is sent in the `Authorization` header
 
 **Example:**
 
 **Python:**
 ```python
 import requests
-from requests.auth import HTTPBasicAuth
+
+login = requests.post(
+    'http://localhost:8080/public/login',
+    json={'username': 'demo', 'password': 'demo123'}
+)
+token = login.json()['token']
 
 response = requests.get(
     'http://localhost:8080/user/getuser',
-    auth=HTTPBasicAuth('demo', 'demo123')
+    headers={'Authorization': f'Bearer {token}'}
 )
 ```
 
 **cURL:**
 ```bash
-curl -u demo:demo123 http://localhost:8080/user/getuser
+curl -H "Authorization: Bearer <jwt-token>" http://localhost:8080/user/getuser
 ```
 
 **JavaScript (Fetch API):**
@@ -796,7 +950,7 @@ curl -u demo:demo123 http://localhost:8080/user/getuser
 const response = await fetch('http://localhost:8080/user/getuser', {
   method: 'GET',
   headers: {
-    'Authorization': 'Basic ' + btoa('demo:demo123')
+    'Authorization': 'Bearer <jwt-token>'
   }
 });
 ```
@@ -925,9 +1079,30 @@ curl http://localhost:8000/health
 # Open browser to: http://localhost:8080/swagger-ui/index.html
 ```
 
-### Docker Deployment
+### Docker Compose Deployment (Recommended)
 
-Each service includes a Dockerfile for containerization.
+The project includes a `docker-compose.yml` that orchestrates all three services:
+
+```bash
+# Build JAR first
+cd customerChurn && mvn clean package -DskipTests && cd ..
+
+# Start everything
+docker compose up --build
+```
+
+This starts:
+- **churn-frontend** (Nginx on port 4173) — serves the glassmorphism SPA
+- **customer-churn** (Tomcat on port 8080) — Spring Boot API
+- **churn-ml** (Uvicorn on port 8000) — FastAPI ML service
+
+### Individual Docker Builds
+
+**Build Frontend Image:**
+```bash
+cd frontend
+docker build -t churn-frontend:latest .
+```
 
 **Build Backend Image:**
 ```bash
@@ -955,11 +1130,18 @@ docker build -t customer-churn-ml:latest .
   - User deletion
 
 - **Authentication & Security**
-  - HTTP Basic authentication
+  - JWT authentication
   - Spring Security configuration
   - Role-based access control
   - CSRF protection disabled for API
   - Password encoding with BCrypt
+
+- **Frontend UI**
+  - Apple-inspired glassmorphism design system
+  - Responsive single-page application (SPA)
+  - Client-side hash routing (Login, Predict, Profile)
+  - Animated gradient backgrounds and micro-interactions
+  - Nginx reverse proxy integration
 
 - **Customer Churn Prediction**
   - Accept customer data via REST API
@@ -987,15 +1169,16 @@ docker build -t customer-churn-ml:latest .
 
 - Add automated integration tests with TestContainers
 - Persist prediction results for analytics and model monitoring
-- Docker Compose for full stack orchestration (backend, ML service, PostgreSQL)
+- Add prediction history page to the frontend
+- Dark mode toggle for the glassmorphism UI
 - Externalize configuration via environment variables
 - Add model retraining workflow and monitoring
 - Add request/response logging middleware
 - Implement pagination for list endpoints
-- Add batch prediction support
-- Customer data persistence in database
+- Add batch prediction support (CSV upload)
 - API rate limiting
 - Automated model versioning
+- Admin dashboard for user management
 
 ---
 
@@ -1029,8 +1212,8 @@ This project is provided as-is for portfolio and educational purposes.
 
 ---
 
-**Last Updated:** June 9, 2026
+**Last Updated:** July 3, 2026
 
-**Version:** 1.0.0
+**Version:** 2.0.0
 
-**Status:** Production Ready
+**Status:** Production Ready (with Docker Compose full-stack deployment)

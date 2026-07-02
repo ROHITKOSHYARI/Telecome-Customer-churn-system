@@ -8,12 +8,12 @@ Built an end-to-end customer churn prediction platform using Spring Boot, Postgr
 
 ## Detailed Resume Version
 
-Developed a customer churn prediction system with a Spring Boot backend and FastAPI machine learning service. Designed REST APIs for user registration, authenticated profile management, and churn prediction. Integrated PostgreSQL through Spring Data JPA, configured Spring Security with HTTP Basic authentication and BCrypt password hashing, and connected the Java backend to a Python scikit-learn inference service using RestTemplate. Trained a logistic regression pipeline with one-hot encoding and feature scaling on the Telco Customer Churn dataset, serialized the model with joblib, and exposed real-time prediction results with churn probability scores.
+Developed a customer churn prediction system with a Spring Boot backend and FastAPI machine learning service. Designed REST APIs for user registration, JWT-authenticated profile management, and churn prediction. Integrated PostgreSQL through Spring Data JPA, configured Spring Security with JWT authentication and BCrypt password hashing, and connected the Java backend to a Python scikit-learn inference service using RestTemplate. Trained a logistic regression pipeline with one-hot encoding and feature scaling on the Telco Customer Churn dataset, serialized the model with joblib, and exposed real-time prediction results with churn probability scores.
 
 ## Bullet Points
 
 - Built a full-stack backend and ML microservice architecture for customer churn prediction using Spring Boot, FastAPI, PostgreSQL, and scikit-learn.
-- Implemented secured REST APIs with Spring Security, HTTP Basic authentication, BCrypt password hashing, and role-based user records.
+- Implemented secured REST APIs with Spring Security, JWT authentication, BCrypt password hashing, and role-based user records.
 - Trained and served a scikit-learn logistic regression pipeline with categorical encoding, numeric scaling, and churn probability scoring.
 - Integrated Java and Python services through REST, allowing the Spring Boot API to request predictions from a dedicated FastAPI model service.
 - Documented setup, architecture, API contracts, model workflow, and deployment steps for a portfolio-ready project.
@@ -58,4 +58,3 @@ java
 python
 portfolio-project
 ```
-

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_URL}
+    url: jdbc:postgresql://ep-bitter-waterfall-aob26o8j-pooler.c-2.ap-southeast-1.aws.neon.tech/customerchurn?user=neondb_owner&password=npg_fWjXZAKh37RC&sslmode=require&channelBinding=require
     username: postgres
 
   jpa:
@@ -24,3 +24,10 @@ logging:
     org:
       springframework:
         security: TRACE
+ml:
+  service:
+    url : http://churn-ml:8000/predict
+
+jwt:
+  secret: ${JWT_SECRET:change-this-development-secret-before-deploying}
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}

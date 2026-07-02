@@ -22,6 +22,9 @@ public class Userservice {
     private final PasswordEncoder passwordEncoder;
     public void createUser(User user){
         try {
+            if (user.getRoles() == null || user.getRoles().isEmpty()) {
+                user.setRoles(java.util.List.of("USER"));
+            }
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepositories.save(user);
         } catch (Exception e) {
@@ -41,6 +44,11 @@ public class Userservice {
 
     public void changepassword(ChangePasswordRequest changePasswordRequest, User user){
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getConfirmPassword()));
+        userRepositories.save(user);
+    }
+
+    public void updateUser(User user){
+        userRepositories.save(user);
     }
 
     public User getUser(String username){

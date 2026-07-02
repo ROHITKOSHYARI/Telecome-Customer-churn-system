@@ -18,7 +18,12 @@ Spring Boot secures these paths:
 /customer/**
 ```
 
-Use HTTP Basic authentication with the username and password created through `/public/saveuser`.
+Use `/public/login` with the username and password created through `/public/saveuser`.
+The login response returns a JWT. Send it to protected endpoints with:
+
+```text
+Authorization: Bearer <jwt-token>
+```
 
 Public paths:
 
@@ -57,7 +62,6 @@ Request body:
 
 ```json
 {
-  "id": 1,
   "username": "demo",
   "password": "demo123",
   "email": "demo@example.com",
@@ -70,6 +74,39 @@ Behavior:
 - Encodes the password with BCrypt.
 - Saves the user in PostgreSQL.
 - Returns `201 Created` on success.
+
+### Login
+
+```http
+POST /public/login
+```
+
+Authentication: not required
+
+Request body:
+
+```json
+{
+  "username": "demo",
+  "password": "demo123"
+}
+```
+
+Example response:
+
+```json
+{
+  "token": "<jwt-token>",
+  "tokenType": "Bearer",
+  "expiresIn": 86400000,
+  "user": {
+    "id": 1,
+    "username": "demo",
+    "email": "demo@example.com",
+    "roles": ["USER"]
+  }
+}
+```
 
 ## User API
 
@@ -84,7 +121,7 @@ Authentication: required
 Example:
 
 ```bash
-curl -u demo:demo123 http://localhost:8080/user/getuser
+curl -H "Authorization: Bearer <jwt-token>" http://localhost:8080/user/getuser
 ```
 
 Example response:
@@ -109,7 +146,8 @@ Authentication: required
 Example:
 
 ```bash
-curl -X DELETE -u demo:demo123 http://localhost:8080/user/delete_user
+curl -X DELETE http://localhost:8080/user/delete_user \
+  -H "Authorization: Bearer <jwt-token>"
 ```
 
 Returns `204 No Content` on success.
@@ -130,7 +168,7 @@ Example:
 
 ```bash
 curl -X POST http://localhost:8080/customer/getpredection ^
-  -u demo:demo123 ^
+  -H "Authorization: Bearer <jwt-token>" ^
   -H "Content-Type: application/json" ^
   -d "{\"gender\":\"Female\",\"seniorCitizen\":0,\"partner\":\"Yes\",\"dependents\":\"No\",\"tenure\":12,\"phoneService\":\"Yes\",\"multipleLines\":\"No\",\"internetService\":\"Fiber optic\",\"onlineSecurity\":\"No\",\"onlineBackup\":\"Yes\",\"deviceProtection\":\"No\",\"techSupport\":\"No\",\"streamingTV\":\"Yes\",\"streamingMovies\":\"Yes\",\"contract\":\"Month-to-month\",\"paperlessBilling\":\"Yes\",\"paymentMethod\":\"Electronic check\",\"monthlyCharges\":89.10,\"totalCharges\":1069.20}"
 ```
@@ -219,4 +257,3 @@ Example body:
   "TotalCharges": 1069.20
 }
 ```
-

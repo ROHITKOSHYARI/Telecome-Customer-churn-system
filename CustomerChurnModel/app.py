@@ -49,7 +49,6 @@ def health():
 model = joblib.load("Models/churn_model.joblib")
 @app.post("/predict", response_model=PredictionResponse)
 def predict_customer(customer: Customer):
-
     data = pd.DataFrame([
         customer.model_dump(
             exclude={"customerId", "churn", "churnProbability"}
@@ -66,3 +65,7 @@ def predict_customer(customer: Customer):
         churn=prediction,
         churnProbability=float(yes_probability)
     )
+
+
+
+# docker run -p 8000:8000 churn-ml

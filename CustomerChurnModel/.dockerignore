@@ -1,8 +1,10 @@
 venv
 .venv
+Churn
 .idea
 .git
 __pycache__
+.pytest_cache
 .ipynb_checkpoints
 *.pyc
 Data

@@ -106,7 +106,7 @@ http://localhost:8080/swagger-ui/index.html
 2. Start the FastAPI ML service on port `8000`.
 3. Start the Spring Boot backend on port `8080`.
 4. Register a user with `/public/saveuser`.
-5. Call secured endpoints using HTTP Basic authentication.
+5. Login with `/public/login` and call secured endpoints using the returned Bearer JWT.
 
 ## Common Issues
 
@@ -133,4 +133,3 @@ Models/churn_model.joblib
 ```
 
 Run the training notebook from inside the `CustomerChurnModel` directory so the relative path is created correctly.
-

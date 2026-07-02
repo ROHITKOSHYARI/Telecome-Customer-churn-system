@@ -6,6 +6,7 @@ import com.customerChurn.entity.Customer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,6 +18,9 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class PredictionService{
     private final RestTemplate restTemplate;
+
+    @Value("${ml.service.url}")
+    private String url;
 
     public PredectionResponse predectionResponse(Customer customer) throws JsonProcessingException {
 
@@ -42,13 +46,18 @@ public class PredictionService{
         request.setMonthlyCharges(customer.getMonthlyCharges());
         request.setTotalCharges(customer.getTotalCharges());
 
-        String url = "http://localhost:8000/predict";
+
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<PredictionRequest> requestEntity  = new HttpEntity<>(request,headers);
         ObjectMapper mapper = new ObjectMapper();
-        System.out.println(mapper.writeValueAsString(request));
-        ResponseEntity<PredectionResponse> response = restTemplate.postForEntity(url,requestEntity,PredectionResponse.class);
+        ResponseEntity<PredectionResponse> response =
+                restTemplate.postForEntity(
+                        url,
+                        requestEntity,
+                        PredectionResponse.class
+                );
         return response.getBody();
     }
 }

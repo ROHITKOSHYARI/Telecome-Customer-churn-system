@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -43,7 +44,7 @@ public class UserController {
             User user = userservice.getUser(username);
             user.setEmail(updatedUser.getEmail());
             user.setRoles(updatedUser.getRoles());
-            userservice.createUser(user);
+            userservice.updateUser(user);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             log.error("cannot update the user", e);
@@ -51,23 +52,22 @@ public class UserController {
         }
     }
 
+    @Transactional
     @PutMapping("/changepassword")
     public ResponseEntity<?> updatePassword(@RequestBody ChangePasswordRequest changePasswordRequest){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
             User user = userservice.getUser(username);
-            String currpass = passwordEncoder.encode(changePasswordRequest.getCurrentPassword());
-            if(currpass.equals(user.getPassword())){
-                userservice.changepassword(changePasswordRequest, user);
-                return new ResponseEntity<>(HttpStatus.CREATED);
+            String hashpass = user.getPassword();
+            if(!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmPassword())){
+                return new ResponseEntity<>("confirm password does not match ",HttpStatus.BAD_GATEWAY);
             }
-            else if(!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmPassword())){
-                return new ResponseEntity<>("confirm password does not match ",HttpStatus.NOT_MODIFIED);
+            if(!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(),hashpass)){
+                return new ResponseEntity<>("your current password docent matches",HttpStatus.BAD_GATEWAY);
             }
-            else{
-                return new ResponseEntity<>("Current password is not Current",HttpStatus.NOT_MODIFIED);
-            }
+            userservice.changepassword(changePasswordRequest, user);
+            return new ResponseEntity<>("password changed successfully ",HttpStatus.OK);
         } catch (Exception e) {
             log.error("password not change",e);
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);

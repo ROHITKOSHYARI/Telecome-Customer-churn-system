@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,5 +90,20 @@ class UserserviceTest {
         userservice.changepassword(changePasswordRequest, user);
 
         assertThat(user.getPassword()).isEqualTo("encoded-new-password");
+    }
+
+    @Test
+    void updateUserSavesWithoutEncodingExistingPassword() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("demo");
+        user.setPassword("already-encoded-password");
+        user.setEmail("new@example.com");
+        user.setRoles(List.of("USER"));
+
+        userservice.updateUser(user);
+
+        verify(userRepositories).save(user);
+        verify(passwordEncoder, never()).encode(anyString());
     }
 }

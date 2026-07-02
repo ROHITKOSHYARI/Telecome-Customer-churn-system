@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -32,11 +33,18 @@ class PredictionServiceTest {
 
     @Test
     void predectionResponseMapsCustomerAndCallsFastApiService() throws Exception {
+
+        ReflectionTestUtils.setField(
+                predictionService,
+                "url",
+                "http://churn-ml:8000/predict"
+        );
+
         PredectionResponse expectedResponse = new PredectionResponse();
         expectedResponse.setChurn("Yes");
         expectedResponse.setChurnProbability(new BigDecimal("0.78"));
         when(restTemplate.postForEntity(
-                eq("http://localhost:8000/predict"),
+                eq("http://churn-ml:8000/predict"),
                 org.mockito.ArgumentMatchers.any(HttpEntity.class),
                 eq(PredectionResponse.class)))
                 .thenReturn(ResponseEntity.ok(expectedResponse));
@@ -46,7 +54,7 @@ class PredictionServiceTest {
         assertThat(actualResponse).isSameAs(expectedResponse);
         ArgumentCaptor<HttpEntity<PredictionRequest>> entityCaptor = ArgumentCaptor.forClass(HttpEntity.class);
         verify(restTemplate).postForEntity(
-                eq("http://localhost:8000/predict"),
+                eq("http://churn-ml:8000/predict"),
                 entityCaptor.capture(),
                 eq(PredectionResponse.class));
 

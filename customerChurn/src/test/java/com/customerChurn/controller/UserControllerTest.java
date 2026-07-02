@@ -102,26 +102,28 @@ class UserControllerTest {
     void updatePasswordSucceedsWhenCurrentPasswordMatchesAndPasswordsMatch() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken("demo", "password"));
-        
+
         com.customerChurn.dto.ChangePasswordRequest changePasswordRequest = new com.customerChurn.dto.ChangePasswordRequest();
         changePasswordRequest.setCurrentPassword("password");
         changePasswordRequest.setNewPassword("newpassword");
         changePasswordRequest.setConfirmPassword("newpassword");
-        
+
         com.customerChurn.entity.User user = new com.customerChurn.entity.User();
         user.setUsername("demo");
         user.setPassword("encoded-password");
-        
+
         when(userservice.getUser("demo")).thenReturn(user);
-        when(passwordEncoder.encode("password")).thenReturn("encoded-password");
-        
+        when(passwordEncoder.matches("password", "encoded-password")).thenReturn(true);
+
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-        
+
         mockMvc.perform(put("/user/changepassword")
                 .contentType("application/json")
                 .content(new ObjectMapper().writeValueAsString(changePasswordRequest)))
-                .andExpect(status().isCreated());
-        
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                        .string("password changed successfully "));
+
         verify(userservice).changepassword(changePasswordRequest, user);
     }
 

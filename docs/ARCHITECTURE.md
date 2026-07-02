@@ -14,7 +14,7 @@ This separation keeps business API concerns independent from model-serving conce
 ```text
 Client
   |
-  | HTTP Basic Auth
+  | Bearer JWT
   v
 Spring Boot API :8080
   |
@@ -114,7 +114,7 @@ Rules:
 - `/user/**` requires authentication.
 - `/customer/**` requires authentication.
 - CSRF is disabled for API usage.
-- HTTP Basic authentication is enabled.
+- JWT bearer-token authentication is enabled for protected endpoints.
 
 ## Integration Point
 
@@ -149,4 +149,3 @@ For full deployment, run these services together:
 - Spring Boot API
 
 In a containerized environment, replace `localhost` service URLs with Docker network service names.
-

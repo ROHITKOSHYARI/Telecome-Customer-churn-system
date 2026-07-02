@@ -1,0 +1,32 @@
+services:
+  churn-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: churn-frontend
+    ports:
+      - "4173:80"
+    depends_on:
+      - customer-churn
+
+  churn-ml:
+    build:
+      context: ./CustomerChurnModel
+      dockerfile: Dockerfile
+    container_name: churn-ml
+    ports:
+      - "8000:8000"
+
+  customer-churn:
+    build:
+      context: ./customerChurn
+      dockerfile: Dockerfile
+    container_name: customer-churn
+    ports:
+      - "8080:8080"
+    depends_on:
+      - churn-ml
+
+
+#        $2a$10$SSwpJQJlxC2NtFZ.goOqUehydd9jhBTpM2ayT0GW58/DVWol0HKe.
+#        $2a$10$SSwpJQJlxC2NtFZ.goOqUehydd9jhBTpM2ayT0GW58/DVWol0HKe.
